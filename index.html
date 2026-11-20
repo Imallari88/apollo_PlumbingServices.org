@@ -27,7 +27,8 @@ a{color:#A84F1A}a:hover{color:#7E3A12}
 <a href="#kitchen" style="color:#FFFFFF;text-decoration:none;padding:10px 0">Typical NSW kitchen</a>
 <a href="#services" style="color:#FFFFFF;text-decoration:none;padding:10px 0">Services</a>
 <a href="#process" style="color:#FFFFFF;text-decoration:none;padding:10px 0">How a job runs</a>
-<a href="#contact" style="background:#E08545;color:#12303A;text-decoration:none;font-weight:600;padding:11px 20px;border-radius:4px"> +63 927 863 1301 </a>
+<button id="call-btn" type="button" style="background:#E08545;color:#12303A;font-weight:600;padding:11px 20px;border-radius:4px;border:none;cursor:pointer;font-family:inherit;font-size:inherit">Talk to Ava</button>
+
 </nav>
 </div>
 </header>
@@ -212,5 +213,37 @@ a{color:#A84F1A}a:hover{color:#7E3A12}
 
 </div>
 
+<script type="module">
+  import { RetellClient } from "https://esm.sh/retell-client-js-sdk@latest";
+
+  const client = new RetellClient({ key: "public_key_YOUR_PUBLIC_KEY" });
+  const btn = document.getElementById("call-btn");
+  let call;
+
+  btn.addEventListener("click", async () => {
+    if (call && call.status !== "ended") {
+      await call.end();
+      return;
+    }
+    btn.textContent = "Connecting...";
+    call = client.createWebCall({
+      agent_id: "agent_cb9bc290be710eafb901ca8233",
+      hooks: {
+        onStatus: (s) => {
+          if (s === "live") btn.textContent = "End call";
+        },
+        onEnd: () => {
+          btn.textContent = "Talk to Ava";
+        },
+        onError: (e) => {
+          btn.textContent = "Talk to Ava";
+          alert("Couldn't start the call: " + e.message);
+        },
+      },
+    });
+  });
+</script>
+
 </body>
 </html>
+
